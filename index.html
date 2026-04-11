@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Organizador Pro</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+<style>
+body{
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg,#e6f4ea,#f0fdf4);
+}
+
+h1{
+    font-weight:600;
+    color:#065f46;
+}
+
+.card{
+    border:none;
+    border-radius:20px;
+    box-shadow:0 10px 25px rgba(0,0,0,0.08);
+    transition:0.3s;
+}
+
+.card:hover{ transform:translateY(-5px); }
+
+.btn{ 
+    border-radius:10px; 
+    transition: all 0.3s ease;
+}
+
+/* BOTONES DINÁMICOS */
+.btn-dinamico{
+    background: linear-gradient(135deg,#16a34a,#15803d);
+    border:none;
+    color:white;
+}
+
+.btn-dinamico:hover{
+    transform: scale(1.05);
+    filter: brightness(1.1);
+}
+
+input, select{ border-radius:10px !important; }
+
+.list-group-item{
+    border:none;
+    border-radius:12px;
+    margin-bottom:8px;
+    box-shadow:0 4px 10px rgba(0,0,0,0.05);
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+
+.badge-priority{ padding:5px 10px; border-radius:8px; font-size:12px; }
+.alta{background:#fee2e2;color:#b91c1c;}
+.media{background:#fef3c7;color:#b45309;}
+.baja{background:#dcfce7;color:#166534;}
+
+.section-title{ font-weight:600; margin-bottom:10px; }
+
+.fade-in{ animation:fadeIn 0.5s ease-in-out; }
+
+@keyframes fadeIn{
+    from{opacity:0;transform:translateY(10px);} 
+    to{opacity:1;transform:translateY(0);} 
+}
+
+.logo-uvg{
+    position:fixed;
+    top:15px;
+    left:15px;
+    width:100px;
+}
+
+.jack{ max-width:200px; }
+
+.login-container{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:20px;
+}
+</style>
+</head>
+
+<body>
+
+<img src="UVGlogo.png" class="logo-uvg">
+
+<div class="container mt-5">
+
+<h1 class="text-center mb-4"> Organizador UVG</h1>
+
+<div id="login" class="card p-4 mx-auto" style="max-width:700px;">
+
+<div class="login-container">
+
+<div style="flex:1;">
+<h4 class="mb-3">Bienvenido</h4>
+<input id="usuario" class="form-control mb-3" placeholder="Tu nombre">
+<button class="btn btn-dinamico w-100" onclick="login()">Entrar</button>
+</div>
+
+<div>
+<img src="Jack.webp" class="jack">
+</div>
+
+</div>
+
+</div>
+
+<div id="app" style="display:none;">
+
+<div class="text-end mb-3">
+<button class="btn btn-danger" onclick="logout()">Salir</button>
+</div>
+
+<div class="row g-4">
+
+<div class="col-md-4">
+<div class="card p-3">
+<h5 class="section-title"> Tareas</h5>
+
+<input id="titulo" class="form-control mb-2" placeholder="Título">
+
+<select id="prioridad" class="form-select mb-2">
+<option>Alta</option>
+<option>Media</option>
+<option>Baja</option>
+</select>
+
+<input id="fecha" type="date" class="form-control mb-2">
+
+<button class="btn btn-dinamico w-100 mb-3" onclick="agregarTarea()">Agregar</button>
+
+<ul id="listaTareas" class="list-group"></ul>
+</div>
+</div>
+
+<div class="col-md-4">
+<div class="card p-3">
+<h5 class="section-title"> Estudio</h5>
+
+<input id="materia" class="form-control mb-2" placeholder="Materia">
+<input id="duracion" class="form-control mb-2" placeholder="Duración">
+
+<button class="btn btn-dinamico w-100 mb-3" onclick="agregarSesion()">Agregar</button>
+
+<ul id="listaSesiones" class="list-group"></ul>
+</div>
+</div>
+
+<div class="col-md-4">
+<div class="card p-3">
+<h5 class="section-title"> Tutorías</h5>
+
+<input id="materiaTutoria" class="form-control mb-2" placeholder="Materia">
+<input id="tutor" class="form-control mb-2" placeholder="Tutor">
+<input id="fechaTutoria" type="date" class="form-control mb-2">
+
+<button class="btn btn-dinamico w-100 mb-3" onclick="agendarTutoria()">Agregar</button>
+
+<ul id="listaTutorias" class="list-group"></ul>
+</div>
+</div>
+
+</div>
+
+</div>
+
+<!-- SECCION INFERIOR DECORATIVA (SOLO APP) -->
+<div class="container mt-5 text-center" id="dragonSection" style="display:none;">
+    <div class="d-flex justify-content-center align-items-end gap-4 flex-wrap">
+        <img src="jack2.png" style="max-width:400px;">
+    </div>
+</div>
+
+</div>
+</div>
+
+<script>
+// COLORES DINÁMICOS AL HACER CLICK
+const colores = [
+    "linear-gradient(135deg,#16a34a,#15803d)",
+    "linear-gradient(135deg,#2563eb,#1d4ed8)",
+    "linear-gradient(135deg,#f59e0b,#d97706)",
+    "linear-gradient(135deg,#ef4444,#dc2626)",
+    "linear-gradient(135deg,#8b5cf6,#7c3aed)"
+];
+
+function cambiarColor(btn){
+    let color = colores[Math.floor(Math.random()*colores.length)];
+    btn.style.background = color;
+}
+
+// aplicar a todos los botones
+
+document.addEventListener("click", function(e){
+    if(e.target.classList.contains("btn-dinamico")){
+        cambiarColor(e.target);
+    }
+});
+
+let usuarioActual=null;
+let tareas=[];
+let sesiones=[];
+let tutorias=[];
+
+function login(){
+let user=document.getElementById("usuario").value;
+if(!user)return;
+usuarioActual=user;
+
+document.getElementById("login").style.display="none";
+document.getElementById("app").style.display="block";
+document.getElementById("dragonSection").style.display="block";
+
+renderTodo();
+}
+
+function logout(){location.reload();}
+
+function agregarTarea(){
+let titulo=document.getElementById("titulo").value;
+let prioridad=document.getElementById("prioridad").value;
+let fecha=document.getElementById("fecha").value;
+if(!titulo||!fecha)return;
+tareas.push({titulo,prioridad,fecha});
+mostrarTareas();
+}
+
+function eliminarTarea(i){tareas.splice(i,1);mostrarTareas();}
+
+function mostrarTareas(){
+let lista=document.getElementById("listaTareas");
+lista.innerHTML="";
+
+tareas.forEach((t,i)=>{
+let badgeClass=t.prioridad.toLowerCase();
+let li=document.createElement("li");
+li.className="list-group-item fade-in";
+li.innerHTML=`
+<div>
+<strong>${t.titulo}</strong><br>
+<small>${t.fecha}</small>
+</div>
+<div>
+<span class="badge-priority ${badgeClass}">${t.prioridad}</span>
+<button class="btn btn-danger btn-sm ms-2">✕</button>
+</div>`;
+
+li.querySelector("button").onclick=()=>eliminarTarea(i);
+lista.appendChild(li);
+});
+}
+
+function agregarSesion(){
+let materia=document.getElementById("materia").value;
+let duracion=document.getElementById("duracion").value;
+if(!materia)return;
+sesiones.push({materia,duracion});
+mostrarSesiones();
+}
+
+function eliminarSesion(i){sesiones.splice(i,1);mostrarSesiones();}
+
+function mostrarSesiones(){
+let lista=document.getElementById("listaSesiones");
+lista.innerHTML="";
+
+sesiones.forEach((s,i)=>{
+let li=document.createElement("li");
+li.className="list-group-item fade-in";
+li.innerHTML=`
+<div>
+<strong>${s.materia}</strong><br>
+<small>${s.duracion}</small>
+</div>
+<button class="btn btn-danger btn-sm">✕</button>`;
+
+li.querySelector("button").onclick=()=>eliminarSesion(i);
+lista.appendChild(li);
+});
+}
+
+function agendarTutoria(){
+let materia=document.getElementById("materiaTutoria").value;
+let tutor=document.getElementById("tutor").value;
+let fecha=document.getElementById("fechaTutoria").value;
+if(!materia||!tutor||!fecha)return;
+tutorias.push({materia,tutor,fecha});
+mostrarTutorias();
+}
+
+function eliminarTutoria(i){tutorias.splice(i,1);mostrarTutorias();}
+
+function mostrarTutorias(){
+let lista=document.getElementById("listaTutorias");
+lista.innerHTML="";
+
+tutorias.forEach((t,i)=>{
+let li=document.createElement("li");
+li.className="list-group-item fade-in";
+li.innerHTML=`
+<div>
+<strong>${t.materia}</strong><br>
+<small>${t.tutor} | ${t.fecha}</small>
+</div>
+<button class="btn btn-danger btn-sm">✕</button>`;
+
+li.querySelector("button").onclick=()=>eliminarTutoria(i);
+lista.appendChild(li);
+});
+}
+
+function renderTodo(){mostrarTareas();mostrarSesiones();mostrarTutorias();}
+</script>
+
+</body>
+</html>
